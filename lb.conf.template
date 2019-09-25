@@ -1,0 +1,8 @@
+<Proxy balancer://lbset>
+    BalancerMember http://192.168.3.90:80
+    BalancerMember http://192.168.3.91:80
+    ProxySet lbmethod=byrequests
+</Proxy>
+
+ProxyPass "/"  "balancer://lbset/"
+ProxyPassReverse "/"  "balancer://lbset/"

@@ -1,0 +1,36 @@
+<HTML>
+<HEAD><TITLE>Ansible Template of System Information</TITLE></HEAD>
+<BODY>
+<PRE>
+This is {{ inventory_hostname }}, a {{ ansible_distribution }} {{ ansible_distribution_version }} system running on {{ ansible_architecture }} hardware.
+
+Filesystem information:
+{% for amount in ansible_mounts %}
+Mount: {{ amount["mount"] }}
+ - Size: {{ amount["size_total"] / 1024 / 1024 }} MiB
+ - Free space: {{ amount["size_available"] / 1024 /1024 }} MiB
+ - Filesystem type: {{ amount["fstype"] }}
+{% endfor %}
+
+            "swap": {
+                "cached": 0, 
+                "free": 2047, 
+                "total": 2047, 
+                "used": 0
+            }
+        }, 
+
+
+Memory Information:
+{% for memkey in ansible_memory_mb.keys() %}
+  {{ memkey }}:
+{% for innerkey in ansible_memory_mb[memkey].keys() %}
+    {{ innerkey }}: {{ ansible_memory_mb[memkey][innerkey] }}
+{% endfor %}
+{% endfor %}
+
+Using a filter:
+{{ ansible_memory_mb | to_yaml }}
+</PRE>
+</BODY>
+</HTML>
