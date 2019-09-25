@@ -1,0 +1,34 @@
+---
+- name: Simple play to setup a webserver
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install Webserver Package - {{ webserver_package }}
+      yum:
+        name: "{{ webserver_package }}"
+        state: installed
+
+    - name: Install basic template index file
+      template:
+        src: index.html.template
+        dest: /var/www/html/index.html
+
+    - name: Populate hostname.html
+      copy:
+        content: "Hostname: {{ inventory_hostname }}"
+        dest: /var/www/html/hostname.html
+
+    - name: Punch hole for port 80 in firewall
+      firewalld:
+        port: "80/tcp"
+        state: enabled
+        immediate: yes
+        permanent: yes
+
+    - name: Start and enable webserver - {{ webserver_service }}
+      service:
+        name: "{{ webserver_service }}"
+        state: started
+        enabled: true
+        
