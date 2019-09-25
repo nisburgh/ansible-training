@@ -1,0 +1,29 @@
+---
+- name: Simple play to setup a load balancer
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install Webserver Package - {{ webserver_package }}
+      yum:
+        name: "{{ webserver_package }}"
+        state: installed
+
+    - name: Install apache load balancer config file
+      template:
+        src: lb.conf.template
+        dest: /etc/httpd/conf.d/lb.conf
+
+    - name: Punch hole for port 80 in firewall
+      firewalld:
+        port: "80/tcp"
+        state: enabled
+        immediate: yes
+        permanent: yes
+
+    - name: Start and enable webserver - {{ webserver_service }}
+      service:
+        name: "{{ webserver_service }}"
+        state: started
+        enabled: true
+        
